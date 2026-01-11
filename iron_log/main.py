@@ -4,7 +4,7 @@ import sounddevice as sd
 import soundfile as sf
 import numpy as np
 from pynput import keyboard
-from src.transcribe import transcribe_audio
+from src.transcribe import transcriber
 
 # Configuration
 AUDIO_PATH = "data/audio_temp/recording.wav"
@@ -64,7 +64,10 @@ def main():
             print("⏳ Transcribing on Pi 5...")
             # If no mic, we use the mock text. If mic exists, we use real file.
             if os.path.exists(AUDIO_PATH):
-                text = transcribe_audio(AUDIO_PATH)
+                # ... inside your key release logic ...
+                text, confidence = transcriber.transcribe(AUDIO_PATH)
+                print(f"Detected: {text} (Confidence: {confidence:.2f})")
+                
             else:
                 text = "Bodyweight eighty five point two kilos."
             
