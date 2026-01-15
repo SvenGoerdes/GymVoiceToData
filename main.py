@@ -5,6 +5,7 @@ import soundfile as sf
 import numpy as np
 from pynput import keyboard
 from src.transcribe import transcriber
+from src.extract import extract_structured
 
 # Configuration
 AUDIO_PATH = "data/audio_temp/recording.wav"
@@ -73,9 +74,13 @@ def main():
             
             print(f"🗣️  Heard: '{text}'")
 
-            # --- NEXT STEP: EXTRACTION ---
-            print("🧠 Extracting data (Next Step)...")
-            # mock_data = extract_data(text)
+            # --- EXTRACT DATA ---
+            print("🧠 Extracting data...")
+            try:
+                data = extract_structured(text)
+                print(f"📊 Extracted: {data}")
+            except Exception as e:
+                print(f"❌ Extraction failed: {e}")
             
     with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
         listener.join()
