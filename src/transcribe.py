@@ -10,11 +10,11 @@ from faster_whisper import WhisperModel
 logging.getLogger("faster_whisper").setLevel(logging.ERROR)
 
 class Transcriber:
-    def __init__(self, model_size: str = "base.en"):
+    def __init__(self, model_size: str = "small"):
         """
         Initializes and keeps the model in memory.
-        - base.en: Great balance of speed/accuracy for Pi 5.
-        - tiny.en: Blazing fast if base.en feels too slow.
+        - small: Best balance for accuracy in German on Pi 5.
+        - base: Faster alternative if 'small' is too slow.
         - device="cpu": Pi 5 doesn't have a CUDA GPU.
         - compute_type="int8": Critical for performance on ARM CPUs.
         """
@@ -28,7 +28,8 @@ class Transcriber:
     def transcribe(self, wav_path: Path) -> Tuple[str, float]:
         """Transcribe the file using the pre-loaded model."""
         # beam_size=1 is fast; beam_size=5 is more accurate.
-        segments, info = self.model.transcribe(str(wav_path), beam_size=1)
+        # language="de" forces German detection, which is more reliable for short clips.
+        segments, info = self.model.transcribe(str(wav_path), beam_size=1, language="de")
         
         text_parts = []
         probs = []
@@ -43,5 +44,5 @@ class Transcriber:
         return text, avg_prob
 
 # Create a single instance to be used across the app
-# This prevents reloading the model every time spacebar is pressed.
-transcriber = Transcriber("base.en")
+# Using 'small' for good German accuracy on 4GB RAM Pi.
+transcriber = Transcriber("small")
