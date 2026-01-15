@@ -1,5 +1,7 @@
 import os
 import queue
+import csv
+from datetime import datetime
 import sounddevice as sd
 import soundfile as sf
 import numpy as np
@@ -9,6 +11,7 @@ from src.extract import extract_structured
 
 # Configuration
 AUDIO_PATH = "data/audio_temp/recording.wav"
+CSV_PATH = "data/gym_data.csv"
 SAMPLE_RATE = 16000  # Whisper prefers 16kHz
 CHANNELS = 1
 
@@ -79,6 +82,13 @@ def main():
             try:
                 data = extract_structured(text)
                 print(f"📊 Extracted: {data}")
+
+                # Save the new data to the CSV file
+                with open(CSV_PATH, "a", newline="") as f:
+                    writer = csv.writer(f)
+                    current_date = datetime.now().strftime("%Y-%m-%d")
+                    writer.writerow([current_date, data.category, data.value])
+                    print(f"✅ Saved to {CSV_PATH}")
             except Exception as e:
                 print(f"❌ Extraction failed: {e}")
             
