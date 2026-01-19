@@ -86,7 +86,7 @@ def plot_metric(df, category, color, x_format, x_title):
         height=300
     ).interactive()
     
-    st.altair_chart(chart, use_container_width=True)
+    st.altair_chart(chart, width='stretch')
 
 
 # Main Loop for Real-Time Updates
