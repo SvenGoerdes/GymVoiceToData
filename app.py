@@ -122,12 +122,12 @@ while True:
             col1, col2 = st.columns(2)
             
             with col1:
-                plot_metric(df_processed, "Bodyweight", "#3498db", x_fmt, x_lbl, [82.5, 85.0, 87.5, 90]) # Blue
-                plot_metric(df_processed, "Bench Press", "#e74c3c", x_fmt, x_lbl, [80]) # Red
+                plot_metric(df_processed, "Bodyweight", "#3498db", x_fmt, x_lbl, [82.5]) # Blue
+                plot_metric(df_processed, "Bench Press", "#e74c3c", x_fmt, x_lbl, [65]) # Red
 
             with col2:
-                plot_metric(df_processed, "Squat", "#2ecc71", x_fmt, x_lbl, [100]) # Green
-                plot_metric(df_processed, "Deadlift", "#9b59b6", x_fmt, x_lbl, [120]) # Purple
+                plot_metric(df_processed, "Squat", "#2ecc71", x_fmt, x_lbl, [80]) # Green
+                plot_metric(df_processed, "Deadlift", "#9b59b6", x_fmt, x_lbl, [110]) # Purple
                 
             st.caption(f"Last updated: {datetime.now().strftime('%H:%M:%S')}")
             
