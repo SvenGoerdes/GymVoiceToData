@@ -68,24 +68,41 @@ def process_data(df):
     final_df = pd.concat([bw_agg, lift_agg])
     return final_df, granularity, x_axis_format, x_axis_title
 
-def plot_metric(df, category, color, x_format, x_title):
+def plot_metric(df, category, color, x_format, x_title, reference_lines=None):
     chart_data = df[df['category'] == category]
-    
+
     if chart_data.empty:
         st.warning(f"No data for {category}")
         return
 
-    # Create Altair chart
-    chart = alt.Chart(chart_data).mark_line(point=True).encode(
+    # Create main line chart
+    main_chart = alt.Chart(chart_data).mark_line(point=True).encode(
         x=alt.X('time_segment:T', title=x_title, axis=alt.Axis(format=x_format)),
         y=alt.Y('value:Q', title='Weight (kg)', scale=alt.Scale(zero=False)),
         tooltip=['time_segment', 'value'],
         color=alt.value(color)
-    ).properties(
+    )
+
+    # Add reference lines if provided
+    layers = [main_chart]
+    if reference_lines:
+        for ref_value in reference_lines:
+            rule = alt.Chart(pd.DataFrame({'y': [ref_value]})).mark_rule(
+                strokeDash=[5, 5],
+                color='gray',
+                opacity=0.5
+            ).encode(
+                y='y:Q',
+                tooltip=alt.value(f"Goal: {ref_value} kg")
+            )
+            layers.append(rule)
+
+    # Layer all charts together
+    chart = alt.layer(*layers).properties(
         title=f"{category}",
         height=300
     ).interactive()
-    
+
     st.altair_chart(chart, width='stretch')
 
 
@@ -105,12 +122,12 @@ while True:
             col1, col2 = st.columns(2)
             
             with col1:
-                plot_metric(df_processed, "Bodyweight", "#3498db", x_fmt, x_lbl) # Blue
-                plot_metric(df_processed, "Bench Press", "#e74c3c", x_fmt, x_lbl) # Red
-                
+                plot_metric(df_processed, "Bodyweight", "#3498db", x_fmt, x_lbl, [82.5, 85.0, 87.5, 90]) # Blue
+                plot_metric(df_processed, "Bench Press", "#e74c3c", x_fmt, x_lbl, [80]) # Red
+
             with col2:
-                plot_metric(df_processed, "Squat", "#2ecc71", x_fmt, x_lbl) # Green
-                plot_metric(df_processed, "Deadlift", "#9b59b6", x_fmt, x_lbl) # Purple
+                plot_metric(df_processed, "Squat", "#2ecc71", x_fmt, x_lbl, [100]) # Green
+                plot_metric(df_processed, "Deadlift", "#9b59b6", x_fmt, x_lbl, [120]) # Purple
                 
             st.caption(f"Last updated: {datetime.now().strftime('%H:%M:%S')}")
             
